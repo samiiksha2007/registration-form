@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Box with Character Counter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-100 to-pink-200 flex flex-col items-center justify-center p-6">
+
+  <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
+    <h1 class="text-2xl font-bold text-purple-700 mb-4">Type Your Message</h1>
+
+    <p class="text-purple-500 mb-2 font-medium">Max 200 characters</p>
+
+    <textarea id="messageBox" rows="5" placeholder="Type your message here..."
+      class="w-full border-2 border-purple-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none bg-purple-50 text-purple-800"></textarea>
+
+    <p id="charCount" class="text-purple-700 mt-2 font-medium">0 / 200 characters</p>
+    <p id="warningMsg" class="text-red-600 mt-1 font-semibold"></p>
+  </div>
+
+  <script>
+    const messageBox = document.getElementById("messageBox");
+    const charCount = document.getElementById("charCount");
+    const warningMsg = document.getElementById("warningMsg");
+    const max = 200;
+
+    messageBox.addEventListener("input", () => {
+      const textLength = messageBox.value.length;
+
+      if(textLength > max) {
+        messageBox.value = messageBox.value.substring(0, max);
+        warningMsg.textContent = "Oops! Max 200 characters reached!";
+      } else {
+        warningMsg.textContent = "";
+      }
+
+      charCount.textContent = `${messageBox.value.length} / ${max} characters`;
+    });
+  </script>
+
+</body>
+</html>

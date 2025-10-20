@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-100 to-green-300 flex flex-col items-center py-10">
+
+  <h1 class="text-3xl font-bold text-green-800 mb-6">Student Registration</h1>
+
+  <form id="studentForm" class="w-full max-w-md bg-white p-6 rounded-2xl shadow-md space-y-5">
+    
+    <!-- Name -->
+    <div>
+      <label class="block font-semibold text-gray-700 mb-1">Full Name</label>
+      <input id="studentName" type="text" placeholder="Enter full name"
+        class="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
+      <p id="nameErr" class="text-red-500 text-sm mt-1"></p>
+    </div>
+
+    <!-- Age -->
+    <div>
+      <label class="block font-semibold text-gray-700 mb-1">Age</label>
+      <input id="studentAge" type="number" placeholder="Enter age"
+        class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-green-400 focus:outline-none">
+      <p id="ageErr" class="text-red-500 text-sm mt-1"></p>
+    </div>
+
+    <!-- Gender -->
+    <div>
+      <span class="block font-semibold text-gray-700 mb-1">Gender</span>
+      <div class="flex gap-3">
+        <label><input type="radio" name="studentGender" value="Male" class="mr-1"> Male</label>
+        <label><input type="radio" name="studentGender" value="Female" class="mr-1"> Female</label>
+        <label><input type="radio" name="studentGender" value="Other" class="mr-1"> Other</label>
+      </div>
+      <p id="genderErr" class="text-red-500 text-sm mt-1"></p>
+    </div>
+
+    <!-- Course -->
+    <div>
+      <label class="block font-semibold text-gray-700 mb-1">Course</label>
+      <select id="studentCourse" class="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none">
+        <option value="">Select a course</option>
+        <option value="HTML">HTML</option>
+        <option value="CSS">CSS</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="Python">Python</option>
+      </select>
+      <p id="courseErr" class="text-red-500 text-sm mt-1"></p>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label class="block font-semibold text-gray-700 mb-1">Email</label>
+      <input id="studentEmail" type="email" placeholder="Enter email"
+        class="border border-gray-300 rounded-lg py-2 px-3 w-full focus:ring-2 focus:ring-green-400 focus:outline-none">
+      <p id="emailErr" class="text-red-500 text-sm mt-1"></p>
+    </div>
+
+    <!-- Register button -->
+    <button id="addStudentBtn" type="submit" disabled
+      class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold disabled:bg-gray-400 transition-all hover:bg-green-700">
+      Add Student
+    </button>
+  </form>
+
+  <!-- Student Table -->
+  <div class="mt-10 w-full max-w-4xl">
+    <table class="w-full border-collapse text-center">
+      <thead class="bg-green-600 text-white">
+        <tr>
+          <th class="p-2 border">Full Name</th>
+          <th class="p-2 border">Age</th>
+          <th class="p-2 border">Gender</th>
+          <th class="p-2 border">Course</th>
+          <th class="p-2 border">Email</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable" class="bg-white"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.getElementById("studentForm");
+    const registerBtn = document.getElementById("addStudentBtn");
+
+    const nameInput = document.getElementById("studentName");
+    const ageInput = document.getElementById("studentAge");
+    const emailInput = document.getElementById("studentEmail");
+    const courseSelect = document.getElementById("studentCourse");
+    const genderRadios = document.querySelectorAll('input[name="studentGender"]');
+
+    const nameErr = document.getElementById("nameErr");
+    const ageErr = document.getElementById("ageErr");
+    const genderErr = document.getElementById("genderErr");
+    const courseErr = document.getElementById("courseErr");
+    const emailErr = document.getElementById("emailErr");
+
+    function validate() {
+      let validName = false, validAge = false, validGender = false, validCourse = false, validEmail = false;
+
+      if(nameInput.value.trim() === "") { nameErr.textContent = "Name required"; }
+      else { nameErr.textContent = ""; validName = true; }
+
+      if(ageInput.value.trim() === "" || ageInput.value <= 0) { ageErr.textContent = "Enter valid age"; }
+      else { ageErr.textContent = ""; validAge = true; }
+
+      const gender = document.querySelector('input[name="studentGender"]:checked');
+      if(!gender) { genderErr.textContent = "Select gender"; }
+      else { genderErr.textContent = ""; validGender = true; }
+
+      if(courseSelect.value === "") { courseErr.textContent = "Select course"; }
+      else { courseErr.textContent = ""; validCourse = true; }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailPattern.test(emailInput.value.trim())) { emailErr.textContent = "Invalid email"; }
+      else { emailErr.textContent = ""; validEmail = true; }
+
+      registerBtn.disabled = !(validName && validAge && validGender && validCourse && validEmail);
+    }
+
+    form.addEventListener("input", validate);
+    genderRadios.forEach(r => r.addEventListener("change", validate));
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const age = ageInput.value.trim();
+      const gender = document.querySelector('input[name="studentGender"]:checked').value;
+      const course = courseSelect.value;
+      const email = emailInput.value.trim();
+
+      const table = document.getElementById("studentTable");
+      const row = document.createElement("tr");
+      row.classList.add("border-b", "hover:bg-green-50");
+
+      row.innerHTML = `
+        <td class="py-2 px-4">${name}</td>
+        <td class="py-2 px-4">${age}</td>
+        <td class="py-2 px-4">${gender}</td>
+        <td class="py-2 px-4">${course}</td>
+        <td class="py-2 px-4">${email}</td>
+        <td class="py-2 px-4">
+          <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 deleteBtn">Delete</button>
+        </td>
+      `;
+
+      table.appendChild(row);
+
+      row.querySelector(".deleteBtn").addEventListener("click", () => row.remove());
+
+      form.reset();
+      registerBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
